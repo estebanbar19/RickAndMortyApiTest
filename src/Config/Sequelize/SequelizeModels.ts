@@ -1,7 +1,7 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('./Sequelize')
+import { DataTypes } from 'sequelize';
+import { db } from './Sequelize';
 
-const Character = sequelize.define('Character', {
+export const Characters = db.define('Character', {
     name: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -23,6 +23,7 @@ const Character = sequelize.define('Character', {
     episode: DataTypes.STRING,
     createdAt: DataTypes.DATE,
     deletedAt: DataTypes.DATE,
+    updatedAt: DataTypes.DATE,
 }, {
     tableName: 'Characters',
-})
+});

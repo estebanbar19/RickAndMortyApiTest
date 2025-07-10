@@ -1,50 +1,87 @@
-import express from 'express'
-import * as process from "node:process";
+import 'module-alias/register';
+import express, { Application } from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import { loadSchemaSync } from '@graphql-tools/load';
 import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader';
-import resolver from './Infrastructure/GraphQL/Resolver';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import * as path from "node:path";
-import sequelize from "./Config/Sequelize/Sequelize";
+import { db as sequelize } from "@config/Sequelize/Sequelize";
+import resolver from './Infrastructure/GraphQL/Resolver';
 
-const app = express()
+class App {
+    private readonly app: Application;
+    private readonly port: number;
 
-const PORT = process.env.PORT || 3000;
+    constructor() {
+        this.app = express();
+        this.port = Number(process.env.PORT) || 3000;
+        this.initializeMiddlewares();
+        this.initializeGraphQL();
+    }
 
-app.use(express.json())
+    private initializeMiddlewares(): void {
+        this.app.use(express.json());
+        this.app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
+        this.app.get('/health', (_, res) => {
+            res.status(200).json({ status: 'OK', timestamp: new Date() });
+        });
+    }
 
-const typeDefs = loadSchemaSync(path.resolve(process.cwd(), 'src/Infrastructure/GraphQL/schemas.types.graphql'), {
-    loaders: [new GraphQLFileLoader()],
+    private initializeGraphQL(): void {
+        try {
+            const typeDefs = loadSchemaSync(
+                path.resolve(process.cwd(), 'src/Infrastructure/GraphQL/schemas.types.graphql'),
+                { loaders: [new GraphQLFileLoader()] }
+            );
+
+            const schema = makeExecutableSchema({
+                typeDefs,
+                resolvers: resolver
+            });
+
+            this.app.use('/graphql', graphqlHTTP({
+                schema,
+                graphiql: true,
+            }));
+        } catch (error) {
+            console.error('Error initializing GraphQL: ', error);
+            process.exit(-1);
+        }
+    }
+
+    private async initializeDatabase(): Promise<void> {
+        try {
+            await sequelize.authenticate();
+            console.log('Database connection established successfully.');
+            
+            await sequelize.sync();
+            console.log('Database synchronized successfully.');
+        } catch (error) {
+            console.error('Unable to connect to the database: ', error);
+            throw error;
+        }
+    }
+
+    public async start(): Promise<void> {
+        try {
+            await this.initializeDatabase();
+            
+            this.app.listen(this.port, () => {
+                console.log(`Server is running on http://localhost:${this.port}`);
+                console.log(`GraphQL Playground available at http://localhost:${this.port}/graphql`);
+            });
+
+        } catch (error) {
+            console.error('Error starting the server: ', error);
+            process.exit(-1);
+        }
+    }
+}
+
+const app = new App();
+
+app.start().catch((error) => {
+    console.error('Error starting application: ', error);
+    process.exit(-1);
 });
-
-const schema = makeExecutableSchema({
-    typeDefs,
-    resolvers: resolver
-});
-
-app.use('/graphql', graphqlHTTP({
-    schema: schema,
-    graphiql: true
-}))
-
-sequelize
-    .authenticate()
-    .then(() => {
-        console.log('Connection has been established successfully.');
-        return sequelize.sync();
-    })
-    .then(() => {
-        console.log('Database has been synced successfully.');
-        app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`)
-        })
-    })
-    .catch((err: any) => {
-        console.error('Unable to connect to the database:', err);
-    });
-
