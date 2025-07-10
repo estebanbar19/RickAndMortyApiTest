@@ -12,14 +12,21 @@
     "express": "^5.1.0",
     "express-graphql": "^0.12.0",
     "graphql": "^16.11.0",
+    "module-alias": "^2.2.3",
     "pg": "^8.16.3",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.7"
+  },
+  "_moduleAliases": {
+    "@config": "dist/Config",
+    "@core": "dist/Core",
+    "@infrastructure": "dist/Infrastructure"
   },
   "devDependencies": {
     "@graphql-tools/graphql-file-loader": "^8.0.20",
     "@graphql-tools/load": "^8.1.0",
     "@types/express": "^5.0.3",
+    "@types/sequelize": "^4.28.20",
     "typescript": "^5.5.3"
   },
   "private": true
