@@ -1,0 +1,15 @@
+meta {
+  name: EpisodeById
+  type: http
+  seq: 10
+}
+
+get {
+  url: https://rickandmortyapi.com/api/episode/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 
+}

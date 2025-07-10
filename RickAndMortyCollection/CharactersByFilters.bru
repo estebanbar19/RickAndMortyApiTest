@@ -1,0 +1,19 @@
+meta {
+  name: CharactersByFilters
+  type: http
+  seq: 5
+}
+
+get {
+  url: https://rickandmortyapi.com/api/character?name=rick&status=alive
+  body: none
+  auth: inherit
+}
+
+params:query {
+  name: rick
+  status: alive
+  ~species: 
+  ~type: 
+  ~gender: 
+}

@@ -1,0 +1,19 @@
+meta {
+  name: CharacterById
+  type: http
+  seq: 4
+}
+
+get {
+  url: https://rickandmortyapi.com/api/character/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 1,183
+}
+
+vars:pre-request {
+  id: 2
+}
