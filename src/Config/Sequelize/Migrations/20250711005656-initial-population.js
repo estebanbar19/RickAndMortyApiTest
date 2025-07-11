@@ -49,12 +49,6 @@ const fetchCharacters = async () => {
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    /**
-     * Add altering commands here.
-     *
-     * Example:
-     * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
-     */
     try {
       const characters = await fetchCharacters();
       await queryInterface.bulkInsert('Characters', characters, {});
@@ -66,12 +60,6 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    /**
-     * Add reverting commands here.
-     *
-     * Example:
-     * await queryInterface.dropTable('users');
-     */
     await queryInterface.bulkDelete('Characters', null, {});
   }
 };
