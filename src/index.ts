@@ -1,4 +1,5 @@
 import 'module-alias/register';
+import dotenv from 'dotenv';
 import express, { Application } from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import { loadSchemaSync } from '@graphql-tools/load';
@@ -7,6 +8,8 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import * as path from "node:path";
 import { db as sequelize } from "@config/Sequelize/Sequelize";
 import resolver from './Infrastructure/GraphQL/Resolver';
+
+dotenv.config();
 
 class App {
     private readonly app: Application;

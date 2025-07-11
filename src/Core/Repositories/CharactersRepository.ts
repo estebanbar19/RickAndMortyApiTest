@@ -1,4 +1,4 @@
-import {Characters} from '@config/Sequelize/SequelizeModels';
+import {Characters} from '@config/Sequelize/Models/Character';
 
 class CharactersRepository{
 
