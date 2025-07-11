@@ -5,8 +5,8 @@ import Character from "@core/DTO/CharacterDTO";
 
 class CharactersRepository{
 
-    public static getAllCharacters() {
-        return Characters.findAll();
+    public static async getAllCharacters() {
+        return (await Characters.findAll()).map(character => Character.FromDatabase(character));
     }
 
     public static async getCharactersByFilters(filters: any) {

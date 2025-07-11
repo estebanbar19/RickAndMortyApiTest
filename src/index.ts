@@ -8,6 +8,7 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import * as path from "node:path";
 import { db as sequelize } from "@config/Sequelize/Sequelize";
 import resolver from './Infrastructure/GraphQL/Resolver';
+import CharactersRouter from "@core/Routes/CharactersRouter";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ class App {
         this.app = express();
         this.port = Number(process.env.PORT) || 3000;
         this.initializeMiddlewares();
+        this.initializeRoutes();
         this.initializeGraphQL();
     }
 
@@ -29,6 +31,13 @@ class App {
         this.app.get('/health', (_, res) => {
             res.status(200).json({ status: 'OK', timestamp: new Date() });
         });
+    }
+
+    private initializeRoutes(): void {
+        this.app.get('/', (_, res) => {
+            res.send('Rick and Morty API');
+        })
+        this.app.use('/characters', CharactersRouter);
     }
 
     private initializeGraphQL(): void {
