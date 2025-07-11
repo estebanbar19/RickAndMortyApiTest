@@ -2,7 +2,7 @@ import CharactersController from '@infrastructure/GraphQL/Controllers/Characters
 
 const resolver = {
     Query: {
-        Characters: () => CharactersController.getAllCharacters(),
+        Characters: (_: any, args: any) => CharactersController.getCharacters(args),
     }
 }
 
